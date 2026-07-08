@@ -1,3 +1,4 @@
+import cmath
 import importlib.util
 from pathlib import Path
 from typing import Any
@@ -50,9 +51,26 @@ def Q_minus(r, omega, epsilon):
     return omega**2 - V_minus(r, epsilon, omega)
 
 
+def x(r, epsilon):
+    M_value = _base.M
+    return r + 2 * M_value * cmath.log((r - 2 * M_value) / (2 * M_value))
+
+
+def dx_dr(r, epsilon):
+    M_value = _base.M
+    return (1 - 2 * M_value / r) ** (-1)
+
+
+def dr_dx(r, epsilon):
+    return 1 / dx_dr(r, epsilon)
+
+
 setattr(_base, "delta_V", delta_V)
 setattr(_base, "V_minus", V_minus)
 setattr(_base, "Q_minus", Q_minus)
+setattr(_base, "x", x)
+setattr(_base, "dx_dr", dx_dr)
+setattr(_base, "dr_dx", dr_dx)
 
 
 for _name in _base.__all__:
