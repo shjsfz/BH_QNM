@@ -35,16 +35,45 @@ def delta_V(r, omega):  # RK
     M_value = _base.M
     l_value = _base.l
 
-    return 144 * M_value**2 * (
-        -3388 * M_value**2
-        + 4 * (647 + 4 * l_value * (1 + l_value)) * M_value * r
-        - 9 * (52 + l_value + l_value**2) * r**2
-        + 20 * r**4 * omega**2
-    ) / ((-2 + l_value + l_value**2) * r**10)
+    return (
+        -3 * M_value**2
+        / (2 * r**10)
+        * (
+            -3840 * M_value**6
+            - 16
+            * (-317 + 22 * l_value * (1 + l_value))
+            * M_value**5
+            * r
+            + 8
+            * M_value**4
+            * r**2
+            * (
+                -209
+                + 24 * l_value * (1 + l_value)
+                - 16 * r**2 * omega**2
+            )
+            + 2
+            * M_value
+            * r**5
+            * (5 + 2 * r**2 * omega**2)
+            + r**6
+            * (
+                3
+                - 2 * l_value * (1 + l_value)
+                + 2 * r**2 * omega**2
+            )
+            + 4
+            * M_value**3
+            * (r**3 + 4 * r**5 * omega**2)
+            + 2
+            * M_value**2
+            * (r**4 + 4 * r**6 * omega**2)
+        )
+    )
 
 
 def V_minus(r, epsilon, omega):  # RW potential of beyond GR with RK correction
-    return (1 - 2 * _base.M / r) * (_base.VGR_minus(r) + epsilon * delta_V(r, omega))
+    return (1 - 2 * _base.M / r) * (_base.VGR_minus(r)) + epsilon * delta_V(r, omega)
 
 
 def Q_minus(r, omega, epsilon):
@@ -53,12 +82,14 @@ def Q_minus(r, omega, epsilon):
 
 def x(r, epsilon):
     M_value = _base.M
-    return r + 2 * M_value * cmath.log((r - 2 * M_value) / (2 * M_value))
+    rh = 2*M_value-epsilon*3/4*M_value
+    return r + 2 * M_value * cmath.log(r/rh-1)
 
 
 def dx_dr(r, epsilon):
     M_value = _base.M
-    return (1 - 2 * M_value / r) ** (-1)
+    rh = 2*M_value-epsilon*3/4*M_value
+    return (1+2*M_value/(r-rh))
 
 
 def dr_dx(r, epsilon):

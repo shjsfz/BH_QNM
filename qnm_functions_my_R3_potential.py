@@ -34,24 +34,50 @@ def get_parameters():
 def delta_V(r, omega):  # Riemann cubic
     M_value = _base.M
     l_value = _base.l
-    L = l_value * (l_value + 1)
 
-    num = (
-        -34804 * M_value**3
-        - 4 * (-13091 + 263 * L) * M_value**2 * r
-        - 5 * (l_value - 2) * (l_value + 3) * (156 + 7 * L) * r**3
-        - 8 * (-87 + L) * r**5 * omega**2
-        + M_value * r**2 * (
-            L * (1727 + 83 * L)
-            - 6 * (4489 + 160 * r**2 * omega**2)
+    return (- M_value**4 * (
+            -410880 * M_value**6
+            - 16
+            * (-34609 + 1754 * l_value * (1 + l_value))
+            * M_value**5
+            * r
+            + 8
+            * M_value**4
+            * r**2
+            * (
+                -30469
+                + 3204 * l_value * (1 + l_value)
+                - 376 * r**2 * omega**2
+            )
+            + 10
+            * M_value
+            * r**5
+            * (5 + 2 * r**2 * omega**2)
+            + 5
+            * r**6
+            * (
+                3
+                - 2 * l_value * (1 + l_value)
+                + 2 * r**2 * omega**2
+            )
+            + 4
+            * M_value**3
+            * r**3
+            * (
+                8645
+                - 1440 * l_value * (1 + l_value)
+                + 308 * r**2 * omega**2
+            )
+            + 10
+            * M_value**2
+            * (r**4 + 4 * r**6 * omega**2)
         )
+        / (4 * M_value**2 * r**10)
     )
-
-    return -24 * M_value * num / ((L - 2) * r**10)
 
 
 def V_minus(r, epsilon, omega):  # RW potential of beyond GR with R3 correction
-    return (1 - 2 * _base.M / r) * (_base.VGR_minus(r) + epsilon * delta_V(r, omega))
+    return (1 - 2 * _base.M / r) * (_base.VGR_minus(r)) + epsilon * delta_V(r, omega)
 
 
 def Q_minus(r, omega, epsilon):
@@ -60,12 +86,14 @@ def Q_minus(r, omega, epsilon):
 
 def x(r, epsilon):
     M_value = _base.M
-    return r + 2 * M_value * cmath.log((r - 2 * M_value) / (2 * M_value))
+    rh = 2*M_value-epsilon*5/8*M_value
+    return r + 2 * M_value * cmath.log(r/rh-1)
 
 
 def dx_dr(r, epsilon):
     M_value = _base.M
-    return (1 - 2 * M_value / r) ** (-1)
+    rh = 2*M_value-epsilon*5/8*M_value
+    return (1+2*M_value/(r-rh))
 
 
 def dr_dx(r, epsilon):
